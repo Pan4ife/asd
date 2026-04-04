@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Util {
-    protected static Connection getConnection() {
+    public static Connection getConnection() {
         String url = "jdbc:mysql://localhost:3306/habsida_task_1";
         String user = "root";
         String password = "1234";
@@ -14,7 +14,6 @@ public class Util {
             Connection connection =
                     DriverManager.getConnection(url, user, password);
             System.out.println("Connection ON");
-            System.out.println("Hello");
             return connection;
 
         } catch (SQLException e) {
