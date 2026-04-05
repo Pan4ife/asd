@@ -3,10 +3,7 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +13,8 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void createUsersTable() {
-        try (Statement statement = Util.getConnection().createStatement()) {
+        try (Connection conn = Util.getConnection();
+             Statement statement = conn.createStatement()) {
             String createTableSQL = "CREATE TABLE IF NOT EXISTS users (" +
                     "id BIGINT PRIMARY KEY AUTO_INCREMENT,\n" +
                     "name VARCHAR(100) NOT NULL,\n" +
@@ -31,7 +29,8 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void dropUsersTable() {
-        try(Statement statement = Util.getConnection().createStatement()){
+        try (Connection conn = Util.getConnection();
+             Statement statement = conn.createStatement()){
         String dropUserTableSQL = "DROP TABLE IF EXISTS users";
         statement.execute(dropUserTableSQL);
         } catch (SQLException e) {
@@ -40,8 +39,9 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        String saveUserSQL = "INSERT INTO users (name, lastname, age) VALUES (?, ?, ?)";
-        try(PreparedStatement insertStat = Util.getConnection().prepareStatement(saveUserSQL)){
+        String saveUserSQL = "INSERT INTO users (name, lastName, age) VALUES (?, ?, ?)";
+        try (Connection conn = Util.getConnection();
+             PreparedStatement insertStat = conn.prepareStatement(saveUserSQL)) {
             insertStat.setString(1, name);
             insertStat.setString(2, lastName);
             insertStat.setByte(3, age);
@@ -53,7 +53,8 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void removeUserById(long id) {
         String removeUserByIdSQL = "DELETE FROM users WHERE id = ?;\n";
-        try (PreparedStatement deleteStat = Util.getConnection().prepareStatement(removeUserByIdSQL)){
+        try (Connection conn = Util.getConnection();
+             PreparedStatement deleteStat = conn.prepareStatement(removeUserByIdSQL)){
             deleteStat.setLong(1, id);
             deleteStat.executeUpdate();
         } catch (SQLException e){
@@ -63,7 +64,8 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public List<User> getAllUsers() {
         String getAllUsersSQL = "SElECT * FROM users";
-        try (PreparedStatement ps = Util.getConnection().prepareStatement(getAllUsersSQL)){
+        try (Connection conn = Util.getConnection();
+             PreparedStatement ps = conn.prepareStatement(getAllUsersSQL)){
             List <User> allUsers = new ArrayList<>();
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
@@ -77,12 +79,13 @@ public class UserDaoJDBCImpl implements UserDao {
             return allUsers;
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
+            return new ArrayList<>();
         }
     }
 
     public void cleanUsersTable() {
-        try(Statement statement = Util.getConnection().createStatement()){
+        try (Connection conn = Util.getConnection();
+             Statement statement = conn.createStatement()){
             String cleanUsersTable = "TRUNCATE TABLE users";
             statement.execute(cleanUsersTable);
         } catch (SQLException e) {
