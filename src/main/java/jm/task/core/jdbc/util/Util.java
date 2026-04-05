@@ -13,7 +13,6 @@ public class Util {
         try {
             Connection connection =
                     DriverManager.getConnection(url, user, password);
-            System.out.println("Connection ON");
             return connection;
 
         } catch (SQLException e) {
